@@ -116,6 +116,16 @@ const startScreen = () => {
   }, 3000);
 };
 
+const win = () => {
+  state.gameMap = grid.getEmptyMatrix();
+  drawGame();
+
+  body.removeEventListener("keydown", captureInput);
+  clearInterval(state.intervalId);
+
+  init();
+}
+
 const gameOver = () => {
   config.song.pause();
   config.song.currentTime = 0;
@@ -155,6 +165,10 @@ const launchGame = () => {
 };
 
 const game = () => {
+  if (state.bricks.length === 0) {
+    win();
+  }
+
   movePaddle();
   moveBall();
   state.direction = "";
@@ -249,7 +263,6 @@ const moveBall = () => {
 
     // Top
     if (
-      state.ballVelocity.dy >= 0 &&
       ballPosition.maxY === brickPosition.minY - 1 &&
       ballPosition.minX >= brickPosition.minX - 1 &&
       ballPosition.maxX <= brickPosition.maxX + 1
