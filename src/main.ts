@@ -1,4 +1,5 @@
 import { Checkboxland } from "checkboxland";
+import { bricks } from "./data";
 import "./style.css";
 
 /**
@@ -15,6 +16,7 @@ const config: Config = {
     ArrowLeft: "left",
     ArrowRight: "right",
   },
+  bricks,
 };
 
 const grid = new Checkboxland({
@@ -24,13 +26,9 @@ const grid = new Checkboxland({
 
 const state: State = {
   direction: "",
-  paddle: [{ x: 0, y: 0 }],
-  ball: [
-    { x: 31, y: 59 },
-    { x: 32, y: 59 },
-    { x: 31, y: 58 },
-    { x: 32, y: 58 },
-  ],
+  paddle: [],
+  ball: [],
+  bricks: [],
   ballVelocity: {
     dx: 1,
     dy: 1,
@@ -49,19 +47,47 @@ const gameOver = () => {
   alert("Game Over!");
   body.removeEventListener("keydown", captureInput);
   clearInterval(state.intervalId);
-}
+
+  state.gameMap = grid.getEmptyMatrix();
+  drawGame();
+  init();
+};
 
 const setInitialState = () => {
-  state.paddle.pop();
+  state.paddle = [];
+  state.ball = [];
 
-  const bottom = config.height - 3;
-  const left = Math.floor(config.width / 2) - 6;
+  // Set initial paddle position
+  const paddleBottom = config.height - 3;
+  const paddleLeft = Math.floor(config.width / 2) - 6;
 
-  for (let y = bottom; y > bottom - 2; y--) {
-    for (let x = left; x < config.width - left; x++) {
+  for (let y = paddleBottom; y >= paddleBottom - 1; y--) {
+    for (let x = paddleLeft; x < config.width - paddleLeft; x++) {
       state.paddle.push({ x, y });
     }
   }
+
+  // Set initial ball position
+  const ballBottom = paddleBottom - 2;
+  const ballLeft = Math.floor(config.width / 2) - 1;
+
+  for (let y = ballBottom; y >= ballBottom - 1; y--) {
+    for (let x = ballLeft; x <= ballLeft + 1; x++) {
+      state.ball.push({ x, y });
+    }
+  }
+
+  config.bricks.forEach((brickConfig) => {
+    const { top, left, width, height } = brickConfig;
+
+    for (let y = top; y < top + height; y++) {
+      const brick: Vector2[] = [];
+      for (let x = left; x < left + width; x++) {
+        brick.push({ x, y });
+      }
+      state.bricks.push(brick);
+    }
+  })
 };
 
 const launchGame = () => {
@@ -105,8 +131,8 @@ const moveBall = () => {
   // Check if the ball is touching the paddle
   if (
     ballPosition.maxY === paddlePosition.minY - 1 &&
-    ballPosition.minX >= paddlePosition.minX &&
-    ballPosition.maxX <= paddlePosition.maxX
+    ballPosition.minX >= paddlePosition.minX - 1 &&
+    ballPosition.maxX <= paddlePosition.maxX + 1
   ) {
     state.ballVelocity.dy *= -1;
   } else if (
@@ -144,6 +170,10 @@ const drawGame = () => {
   state.ball.forEach((segment) => {
     state.gameMap[segment.y][segment.x] = 1;
   });
+
+  state.bricks.forEach((brick) => brick.forEach((segment) => {
+    state.gameMap[segment.y][segment.x] = 1;
+  }));
 
   grid.setData(state.gameMap);
 };
