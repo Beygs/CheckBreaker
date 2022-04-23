@@ -13,7 +13,7 @@ interface Config {
 }
 
 interface State {
-  lastUserDirectionCommand: string;
+  direction: string;
   paddle: Vector2[];
   ball: Vector2[];
   gameMap: any[][];

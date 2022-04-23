@@ -10,10 +10,10 @@ const app = document.querySelector<HTMLDivElement>("#app")!;
 const config: Config = {
   width: 64,
   height: 64,
-  interval: 150,
+  interval: 100,
   directionsMap: {
-    "37": "left",
-    "39": "right",
+    ArrowLeft: "left",
+    ArrowRight: "right",
   },
 };
 
@@ -23,7 +23,7 @@ const grid = new Checkboxland({
 });
 
 const state: State = {
-  lastUserDirectionCommand: "",
+  direction: "",
   paddle: [{ x: 0, y: 0 }],
   ball: [
     { x: 32, y: 59 },
@@ -53,7 +53,22 @@ const setInitialState = () => {
 };
 
 const game = () => {
+  movePaddle();
+  state.direction = "";
   drawGame();
+};
+
+const movePaddle = () => {
+  if (state.direction === "left") {
+    if (Math.min(...state.paddle.map((segment) => segment.x)) === 0) return;
+
+    state.paddle.map((segment) => segment.x--);
+  }
+  if (state.direction === "right") {
+    if (Math.max(...state.paddle.map((segment) => segment.x)) === config.width - 1) return;
+
+    state.paddle.map((segment) => segment.x++);
+  }
 };
 
 const drawGame = () => {
@@ -76,7 +91,7 @@ const captureInput = (e: KeyboardEvent) => {
 
   if (validDirection) {
     e.preventDefault();
-    state.lastUserDirectionCommand = validDirection;
+    state.direction = validDirection;
   }
 };
 
