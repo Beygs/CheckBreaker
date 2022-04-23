@@ -22,6 +22,8 @@ interface Config {
   directionsMap: {
     [key: string]: string;
   };
+  song: HTMLAudioElement;
+  gameOverSound: HTMLAudioElement
 }
 
 interface State {

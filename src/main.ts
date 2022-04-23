@@ -5,6 +5,8 @@ import dataUtils from "checkboxland/dist-src/plugins/dataUtils";
 import PrintType from "checkboxland/dist-types/plugins/print/print";
 import DataUtilsType from "checkboxland/dist-types/plugins/dataUtils";
 import { bricks } from "./data";
+import CasseBriquesSong from "./assets/sounds/cassebriques.wav";
+import GameOverSound from "./assets/sounds/tnul.wav";
 import "./style.css";
 
 Checkboxland.extend(marquee);
@@ -26,6 +28,8 @@ const config: Config = {
     ArrowRight: "right",
   },
   bricks,
+  song: new Audio(CasseBriquesSong),
+  gameOverSound: new Audio(GameOverSound),
 };
 
 interface CheckboxlandWithPlugins extends Checkboxland {
@@ -113,9 +117,17 @@ const startScreen = () => {
 };
 
 const gameOver = () => {
-  const textData = grid.print("Game Over!", { dataOnly: true });
-  const paddedTextData = grid.dataUtils("pad", textData, { top: 20 });
-  grid.marquee(paddedTextData, { interval: 50, repeat: true });
+  config.song.pause();
+  config.song.currentTime = 0;
+
+  config.gameOverSound.play();
+
+  config.gameOverSound.addEventListener("ended", () => {
+    config.gameOverSound.pause();
+    config.gameOverSound.currentTime = 0;
+
+    config.song.play();
+  })
 
   body.removeEventListener("keydown", captureInput);
   clearInterval(state.intervalId);
@@ -133,6 +145,9 @@ const launchGame = () => {
 
   grid.marquee.cleanUp();
   clearTimeout(state.timeoutId);
+
+  config.song.loop = true;
+  config.song.play();
 
   body.removeEventListener("keydown", launchGame);
   body.addEventListener("keydown", captureInput);
@@ -208,7 +223,7 @@ const moveBall = () => {
 
   // Left
   if (
-    state.ballVelocity.dx === 1 &&
+    state.ballVelocity.dx >= 0 &&
     ballPosition.maxX === paddlePosition.minX - 1 &&
     ballPosition.minY >= paddlePosition.minY - 1 &&
     ballPosition.maxY <= paddlePosition.maxY + 1
@@ -218,7 +233,7 @@ const moveBall = () => {
 
   // Right
   if (
-    state.ballVelocity.dx === -1 &&
+    state.ballVelocity.dx <= 0 &&
     ballPosition.minX === paddlePosition.maxX + 1 &&
     ballPosition.minY >= paddlePosition.minY - 1 &&
     ballPosition.maxY <= paddlePosition.maxY + 1
@@ -234,6 +249,7 @@ const moveBall = () => {
 
     // Top
     if (
+      state.ballVelocity.dy >= 0 &&
       ballPosition.maxY === brickPosition.minY - 1 &&
       ballPosition.minX >= brickPosition.minX - 1 &&
       ballPosition.maxX <= brickPosition.maxX + 1
@@ -245,6 +261,7 @@ const moveBall = () => {
 
     // Bottom
     if (
+      state.ballVelocity.dy <= 0 &&
       ballPosition.minY === brickPosition.maxY + 1 &&
       ballPosition.minX >= brickPosition.minX - 1 &&
       ballPosition.maxX <= brickPosition.maxX + 1
@@ -256,7 +273,7 @@ const moveBall = () => {
 
     // Left
     if (
-      state.ballVelocity.dx > 0 &&
+      state.ballVelocity.dx >= 0 &&
       ballPosition.maxX === brickPosition.minX - 1 &&
       ballPosition.minY >= brickPosition.minY - 1 &&
       ballPosition.maxY <= brickPosition.maxY + 1
@@ -268,7 +285,7 @@ const moveBall = () => {
 
     // Right
     if (
-      state.ballVelocity.dx < 0 &&
+      state.ballVelocity.dx <= 0 &&
       ballPosition.minX === brickPosition.maxX + 1 &&
       ballPosition.minY >= brickPosition.minY - 1 &&
       ballPosition.maxY <= brickPosition.maxY + 1
@@ -316,12 +333,7 @@ const getPosition = (object: Vector2[]) => ({
 });
 
 const removeBrick = (id: number) => {
-  const brickId = state.bricks.findIndex((brick) => brick.id === id);
-
-  state.bricks = [
-    ...state.bricks.slice(0, brickId),
-    ...state.bricks.slice(brickId + 1),
-  ];
+  state.bricks = state.bricks.filter((brick) => brick.id !== id);
 };
 
 const captureInput = (e: KeyboardEvent) => {
