@@ -16,6 +16,10 @@ interface State {
   direction: string;
   paddle: Vector2[];
   ball: Vector2[];
+  ballVelocity: {
+    dx: number;
+    dy: number;
+  }
   gameMap: any[][];
   intervalId?: number;
 }
