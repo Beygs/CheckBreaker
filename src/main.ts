@@ -43,16 +43,6 @@ const init = () => {
   body.addEventListener("keydown", launchGame);
 };
 
-const gameOver = () => {
-  alert("Game Over!");
-  body.removeEventListener("keydown", captureInput);
-  clearInterval(state.intervalId);
-
-  state.gameMap = grid.getEmptyMatrix();
-  drawGame();
-  init();
-};
-
 const setInitialState = () => {
   state.paddle = [];
   state.ball = [];
@@ -87,9 +77,12 @@ const setInitialState = () => {
       }
       state.bricks.push(brick);
     }
-  })
+  });
 };
 
+/**
+ * Game
+ */
 const launchGame = () => {
   body.removeEventListener("keydown", launchGame);
   body.addEventListener("keydown", captureInput);
@@ -101,6 +94,16 @@ const game = () => {
   moveBall();
   state.direction = "";
   drawGame();
+};
+
+const gameOver = () => {
+  alert("Game Over!");
+  body.removeEventListener("keydown", captureInput);
+  clearInterval(state.intervalId);
+
+  state.gameMap = grid.getEmptyMatrix();
+  drawGame();
+  init();
 };
 
 const movePaddle = () => {
@@ -129,20 +132,28 @@ const moveBall = () => {
   if (ballPosition.minY === 0) state.ballVelocity.dy *= -1;
 
   // Check if the ball is touching the paddle
+
+  // Top
   if (
     ballPosition.maxY === paddlePosition.minY - 1 &&
     ballPosition.minX >= paddlePosition.minX - 1 &&
     ballPosition.maxX <= paddlePosition.maxX + 1
   ) {
     state.ballVelocity.dy *= -1;
-  } else if (
+  }
+
+  // Left
+  if (
     state.ballVelocity.dx === 1 &&
     ballPosition.maxX === paddlePosition.minX - 1 &&
     ballPosition.minY >= paddlePosition.minY - 1 &&
     ballPosition.maxY <= paddlePosition.maxY + 1
   ) {
     state.ballVelocity.dx *= -1;
-  } else if (
+  }
+
+  // Right
+  if (
     state.ballVelocity.dx === -1 &&
     ballPosition.minX === paddlePosition.maxX + 1 &&
     ballPosition.minY >= paddlePosition.minY - 1 &&
@@ -150,6 +161,50 @@ const moveBall = () => {
   ) {
     state.ballVelocity.dx *= -1;
   }
+
+  // Check if the ball is touching a brick
+  state.bricks.forEach((brick, id) => {
+    const brickPosition = getPosition(brick);
+
+    // Top
+    if (
+      ballPosition.maxY === brickPosition.minY - 1 &&
+      ballPosition.minX >= brickPosition.minX - 1 &&
+      ballPosition.maxX <= brickPosition.maxX + 1
+    ) {
+      removeBrick(id);
+      state.ballVelocity.dy *= -1;
+    }
+    // Bottom
+    if (
+      ballPosition.minY === brickPosition.maxY + 1 &&
+      ballPosition.minX >= brickPosition.minX - 1 &&
+      ballPosition.maxX <= brickPosition.maxX + 1
+    ) {
+      removeBrick(id);
+      state.ballVelocity.dy *= -1;
+    }
+
+    // Left
+    if (
+      ballPosition.maxX === brickPosition.minX - 1 &&
+      ballPosition.minY >= brickPosition.minY - 1 &&
+      ballPosition.maxY <= brickPosition.maxY + 1
+    ) {
+      removeBrick(id);
+      state.ballVelocity.dx *= -1;
+    }
+
+    // Right
+    if (
+      ballPosition.minX === brickPosition.maxX + 1 &&
+      ballPosition.minY >= brickPosition.minY - 1 &&
+      ballPosition.maxY <= brickPosition.maxY + 1
+    ) {
+      removeBrick(id);
+      state.ballVelocity.dx *= -1;
+    }
+  });
 
   // Check for game over
   if (ballPosition.maxY === config.height - 1) return gameOver();
@@ -171,9 +226,11 @@ const drawGame = () => {
     state.gameMap[segment.y][segment.x] = 1;
   });
 
-  state.bricks.forEach((brick) => brick.forEach((segment) => {
-    state.gameMap[segment.y][segment.x] = 1;
-  }));
+  state.bricks.forEach((brick) =>
+    brick.forEach((segment) => {
+      state.gameMap[segment.y][segment.x] = 1;
+    })
+  );
 
   grid.setData(state.gameMap);
 };
@@ -184,6 +241,13 @@ const getPosition = (object: Vector2[]) => ({
   minY: Math.min(...object.map((segment) => segment.y)),
   maxY: Math.max(...object.map((segment) => segment.y)),
 });
+
+const removeBrick = (id: number) => {
+  state.bricks = [
+    ...state.bricks.slice(0, id - 1),
+    ...state.bricks.slice(id + 1),
+  ];
+};
 
 const captureInput = (e: KeyboardEvent) => {
   const keyCode: string = e.code;
