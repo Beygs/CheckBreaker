@@ -1,10 +1,10 @@
 {
   "name": "checkbreaker",
   "private": true,
-  "homepage": "https://beygs.github.io/CheckBreak",
+  "homepage": "https://beygs.github.io/CheckBreaker/",
   "version": "0.0.0",
   "scripts": {
-    "pre-deploy": "yarn build",
+    "predeploy": "yarn build",
     "deploy": "gh-pages -d dist",
     "dev": "vite",
     "build": "tsc && vite build",
