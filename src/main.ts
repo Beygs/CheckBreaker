@@ -78,7 +78,7 @@ const setInitialState = () => {
 
   // Set initial ball position
   const ballBottom =
-    config.height - Math.floor(Math.random() * (config.height / 3 * 2));
+    config.height - Math.floor(Math.random() * ((config.height / 3) * 2));
   const ballLeft = Math.floor(Math.random() * config.width);
 
   for (let y = ballBottom; y >= ballBottom - 1; y--) {
@@ -124,7 +124,7 @@ const win = () => {
   clearInterval(state.intervalId);
 
   init();
-}
+};
 
 const gameOver = () => {
   config.song.pause();
@@ -137,7 +137,7 @@ const gameOver = () => {
     config.gameOverSound.currentTime = 0;
 
     config.song.play();
-  })
+  });
 
   body.removeEventListener("keydown", captureInput);
   clearInterval(state.intervalId);
@@ -205,8 +205,8 @@ const moveBall = () => {
   // Top
   if (
     ballPosition.maxY === paddlePosition.minY - 1 &&
-    ballPosition.minX >= paddlePosition.minX - 1 &&
-    ballPosition.maxX <= paddlePosition.maxX + 1
+    ballPosition.maxX >= paddlePosition.minX - 1 &&
+    ballPosition.minX <= paddlePosition.maxX + 1
   ) {
     state.ballVelocity.dy *= -1;
 
@@ -256,8 +256,8 @@ const moveBall = () => {
     // Top
     if (
       ballPosition.maxY === brickPosition.minY - 1 &&
-      ballPosition.minX >= brickPosition.minX - 1 &&
-      ballPosition.maxX <= brickPosition.maxX + 1
+      ballPosition.maxX >= brickPosition.minX - 1 &&
+      ballPosition.minX <= brickPosition.maxX + 1
     ) {
       removeBrick(brick.id);
       state.ballVelocity.dy *= -1;
@@ -268,8 +268,8 @@ const moveBall = () => {
     if (
       state.ballVelocity.dy <= 0 &&
       ballPosition.minY === brickPosition.maxY + 1 &&
-      ballPosition.minX >= brickPosition.minX - 1 &&
-      ballPosition.maxX <= brickPosition.maxX + 1
+      ballPosition.maxX >= brickPosition.minX - 1 &&
+      ballPosition.minX <= brickPosition.maxX + 1
     ) {
       removeBrick(brick.id);
       state.ballVelocity.dy *= -1;
@@ -280,8 +280,8 @@ const moveBall = () => {
     if (
       state.ballVelocity.dx >= 0 &&
       ballPosition.maxX === brickPosition.minX - 1 &&
-      ballPosition.minY >= brickPosition.minY - 1 &&
-      ballPosition.maxY <= brickPosition.maxY + 1
+      ballPosition.maxY >= brickPosition.minY - 1 &&
+      ballPosition.minY <= brickPosition.maxY + 1
     ) {
       removeBrick(brick.id);
       state.ballVelocity.dx *= -1;
@@ -292,8 +292,8 @@ const moveBall = () => {
     if (
       state.ballVelocity.dx <= 0 &&
       ballPosition.minX === brickPosition.maxX + 1 &&
-      ballPosition.minY >= brickPosition.minY - 1 &&
-      ballPosition.maxY <= brickPosition.maxY + 1
+      ballPosition.maxY >= brickPosition.minY - 1 &&
+      ballPosition.minY <= brickPosition.maxY + 1
     ) {
       removeBrick(brick.id);
       state.ballVelocity.dx *= -1;
