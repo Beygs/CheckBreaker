@@ -7,6 +7,9 @@ import DataUtilsType from "checkboxland/dist-types/plugins/dataUtils";
 import { bricks } from "./data";
 import CasseBriquesSong from "./assets/sounds/cassebriques.wav";
 import GameOverSound from "./assets/sounds/tnul.wav";
+import BoingSound from "./assets/sounds/boing.wav";
+import CrashSound from "./assets/sounds/crash.wav";
+import OuiSound from "./assets/sounds/oui.mp3";
 import "./style.css";
 
 Checkboxland.extend(marquee);
@@ -18,15 +21,21 @@ Checkboxland.extend(dataUtils);
  */
 const body = document.body!;
 const app = document.querySelector<HTMLDivElement>("#app")!;
-const soundControl = document.getElementById("sound-control")! as HTMLInputElement;
+const soundControl = document.getElementById(
+  "sound-control"
+)! as HTMLInputElement;
 
+// Sound
 soundControl.addEventListener("change", (e) => {
   const target = e.target as HTMLInputElement;
   state.sound = target.checked;
 
   config.song.volume = target.checked ? 1 : 0;
   config.gameOverSound.volume = target.checked ? 1 : 0;
-})
+  config.boingSound.volume = target.checked ? 1 : 0;
+  config.crashSound.volume = target.checked ? 1 : 0;
+  config.ouiSound.volume = target.checked ? 1 : 0;
+});
 
 const config: Config = {
   width: 64,
@@ -39,6 +48,9 @@ const config: Config = {
   bricks,
   song: new Audio(CasseBriquesSong),
   gameOverSound: new Audio(GameOverSound),
+  boingSound: new Audio(BoingSound),
+  crashSound: new Audio(CrashSound),
+  ouiSound: new Audio(OuiSound),
 };
 
 interface CheckboxlandWithPlugins extends Checkboxland {
@@ -127,6 +139,18 @@ const startScreen = () => {
 };
 
 const win = () => {
+  config.song.pause();
+  config.song.currentTime = 0;
+
+  config.ouiSound.play();
+
+  config.ouiSound.addEventListener("ended", () => {
+    config.ouiSound.pause();
+    config.ouiSound.currentTime = 0;
+
+    config.song.play();
+  })
+
   state.gameMap = grid.getEmptyMatrix();
   drawGame();
 
@@ -206,9 +230,9 @@ const moveBall = () => {
   const paddlePosition = getPosition(state.paddle);
 
   // Check if the ball is touching the borders
-  if (ballPosition.minX <= 0) state.ballVelocity.dx *= -1;
-  if (ballPosition.maxX >= config.width - 1) state.ballVelocity.dx *= -1;
-  if (ballPosition.minY <= 0) state.ballVelocity.dy *= -1;
+  if (ballPosition.minX <= 0) bounce("dx");
+  if (ballPosition.maxX >= config.width - 1) bounce("dx");
+  if (ballPosition.minY <= 0) bounce("dy");
 
   // Check if the ball is touching the paddle
 
@@ -218,7 +242,7 @@ const moveBall = () => {
     ballPosition.maxX >= paddlePosition.minX - 1 &&
     ballPosition.minX <= paddlePosition.maxX + 1
   ) {
-    state.ballVelocity.dy *= -1;
+    bounce("dy");
 
     if (ballPosition.maxX <= paddlePosition.minX + 4) {
       state.ballVelocity.dx = -1;
@@ -244,7 +268,7 @@ const moveBall = () => {
     ballPosition.minY >= paddlePosition.minY - 1 &&
     ballPosition.maxY <= paddlePosition.maxY + 1
   ) {
-    state.ballVelocity.dx *= -1;
+    bounce("dx");
   }
 
   // Right
@@ -254,7 +278,7 @@ const moveBall = () => {
     ballPosition.minY >= paddlePosition.minY - 1 &&
     ballPosition.maxY <= paddlePosition.maxY + 1
   ) {
-    state.ballVelocity.dx *= -1;
+    bounce("dx");
   }
 
   // Check if the ball is touching a brick
@@ -269,8 +293,7 @@ const moveBall = () => {
       ballPosition.maxX >= brickPosition.minX - 1 &&
       ballPosition.minX <= brickPosition.maxX + 1
     ) {
-      removeBrick(brick.id);
-      state.ballVelocity.dy *= -1;
+      crash("dy", brick.id);
       break;
     }
 
@@ -281,8 +304,7 @@ const moveBall = () => {
       ballPosition.maxX >= brickPosition.minX - 1 &&
       ballPosition.minX <= brickPosition.maxX + 1
     ) {
-      removeBrick(brick.id);
-      state.ballVelocity.dy *= -1;
+      crash("dy", brick.id);
       break;
     }
 
@@ -293,8 +315,7 @@ const moveBall = () => {
       ballPosition.maxY >= brickPosition.minY - 1 &&
       ballPosition.minY <= brickPosition.maxY + 1
     ) {
-      removeBrick(brick.id);
-      state.ballVelocity.dx *= -1;
+      crash("dx", brick.id);
       break;
     }
 
@@ -305,8 +326,7 @@ const moveBall = () => {
       ballPosition.maxY >= brickPosition.minY - 1 &&
       ballPosition.minY <= brickPosition.maxY + 1
     ) {
-      removeBrick(brick.id);
-      state.ballVelocity.dx *= -1;
+      crash("dx", brick.id);
       break;
     }
   }
@@ -346,6 +366,20 @@ const getPosition = (object: Vector2[]) => ({
   minY: Math.min(...object.map((segment) => segment.y)),
   maxY: Math.max(...object.map((segment) => segment.y)),
 });
+
+const bounce = (velocityAxis: "dx" | "dy") => {
+  config.boingSound.currentTime = 0;
+  config.boingSound.play();
+  state.ballVelocity[velocityAxis] *= -1;
+};
+
+const crash = (velocityAxis: "dx" | "dy", id: number) => {
+  config.crashSound.currentTime = 0;
+  config.crashSound.play();
+  state.ballVelocity[velocityAxis] *= -1;
+
+  removeBrick(id);
+}
 
 const removeBrick = (id: number) => {
   state.bricks = state.bricks.filter((brick) => brick.id !== id);

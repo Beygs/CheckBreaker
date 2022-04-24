@@ -2,6 +2,12 @@ declare module "checkboxland/dist-src/plugins/marquee";
 declare module "checkboxland/dist-src/plugins/print/print";
 declare module "checkboxland/dist-src/plugins/dataUtils";
 
+interface Window {
+  webkitAudioContext?: AudioContext;
+}
+
+declare const window: Window;
+
 type Vector2 = {
   x: number;
   y: number;
@@ -23,7 +29,10 @@ interface Config {
     [key: string]: string;
   };
   song: HTMLAudioElement;
-  gameOverSound: HTMLAudioElement
+  gameOverSound: HTMLAudioElement;
+  boingSound: HTMLAudioElement;
+  crashSound: HTMLAudioElement;
+  ouiSound: HTMLAudioElement;
 }
 
 interface State {
