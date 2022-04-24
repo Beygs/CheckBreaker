@@ -2,6 +2,7 @@ import { defineConfig } from "vite";
 import { VitePWA } from "vite-plugin-pwa";
 
 export default defineConfig({
+  base: process.env.BASE_URL ?? "/",
   plugins: [
     VitePWA({
       includeAssets: [
@@ -14,7 +15,7 @@ export default defineConfig({
         name: "CheckBreaker",
         short_name: "CheckBreaker",
         description: "Casse briques en checkbox",
-        start_url: "/",
+        start_url: process.env.BASE_URL ?? "/",
         theme_color: "#ffffff",
         icons: [
           {

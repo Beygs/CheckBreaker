@@ -4,7 +4,7 @@
   "homepage": "https://beygs.github.io/CheckBreaker/",
   "version": "0.0.0",
   "scripts": {
-    "predeploy": "yarn build",
+    "predeploy": "BASE_URL=/CheckBreaker/ yarn build",
     "deploy": "gh-pages -d dist",
     "dev": "vite",
     "build": "tsc && vite build",
