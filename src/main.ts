@@ -78,7 +78,7 @@ const setInitialState = () => {
 
   // Set initial ball position
   const ballBottom =
-    config.height - Math.floor(Math.random() * (config.height / 3 + 16));
+    config.height - Math.floor(Math.random() * (config.height / 3 * 2));
   const ballLeft = Math.floor(Math.random() * config.width);
 
   for (let y = ballBottom; y >= ballBottom - 1; y--) {
@@ -196,17 +196,9 @@ const moveBall = () => {
   const paddlePosition = getPosition(state.paddle);
 
   // Check if the ball is touching the borders
-  if (ballPosition.minX === 0) state.ballVelocity.dx *= -1;
-  if (ballPosition.maxX === config.width - 1) state.ballVelocity.dx *= -1;
-  if (ballPosition.minY === 0) state.ballVelocity.dy *= -1;
-
-  if (state.ballVelocity.dx === -2) {
-    if (ballPosition.minX === 1) state.ballVelocity.dx *= -1;
-  }
-
-  if (state.ballVelocity.dx === 2) {
-    if (ballPosition.maxX === config.width - 2) state.ballVelocity.dx *= -1;
-  }
+  if (ballPosition.minX <= 0) state.ballVelocity.dx *= -1;
+  if (ballPosition.maxX >= config.width - 1) state.ballVelocity.dx *= -1;
+  if (ballPosition.minY <= 0) state.ballVelocity.dy *= -1;
 
   // Check if the ball is touching the paddle
 
