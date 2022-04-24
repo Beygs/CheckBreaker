@@ -9,12 +9,17 @@
     <link rel="icon" type="image/png" sizes="16x16" href="/CheckBreaker/favicon-16x16.png" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>CheckBreaker</title>
-    <script type="module" crossorigin src="/CheckBreaker/assets/index.b27c5b1f.js"></script>
+    <script type="module" crossorigin src="/CheckBreaker/assets/index.60546db2.js"></script>
     <link rel="stylesheet" href="/CheckBreaker/assets/index.eb687faf.css">
   </head>
   <body>
     <label for="sound-control">Son</label>
     <input type="checkbox" id="sound-control" checked="true" />
+    <label for="volume">Volume</label>
+    <input type="range" min="0" max="1" step="0.01" value="1" id="volume" />
+    <label for="speed">Vitesse</label>
+    <input type="range" id="speed" min="-120" max="-20" value="-70" step="1" />
+    <button id="reset">Reset</button>
     <div id="app"></div>
     
   </body>
