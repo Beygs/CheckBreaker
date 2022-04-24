@@ -18,6 +18,15 @@ Checkboxland.extend(dataUtils);
  */
 const body = document.body!;
 const app = document.querySelector<HTMLDivElement>("#app")!;
+const soundControl = document.getElementById("sound-control")! as HTMLInputElement;
+
+soundControl.addEventListener("change", (e) => {
+  const target = e.target as HTMLInputElement;
+  state.sound = target.checked;
+
+  config.song.volume = target.checked ? 1 : 0;
+  config.gameOverSound.volume = target.checked ? 1 : 0;
+})
 
 const config: Config = {
   width: 64,
@@ -55,6 +64,7 @@ const state: State = {
   gameMap: grid.getEmptyMatrix(),
   intervalId: undefined,
   timeoutId: undefined,
+  sound: soundControl.checked,
 };
 
 const init = () => {

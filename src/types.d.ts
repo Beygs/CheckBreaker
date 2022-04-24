@@ -41,4 +41,5 @@ interface State {
   gameMap: any[][];
   intervalId?: number;
   timeoutId?: number;
+  sound: boolean;
 }
