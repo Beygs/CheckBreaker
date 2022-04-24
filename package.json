@@ -12,7 +12,8 @@
   },
   "devDependencies": {
     "typescript": "^4.5.4",
-    "vite": "^2.9.5"
+    "vite": "^2.9.5",
+    "vite-plugin-pwa": "^0.12.0"
   },
   "dependencies": {
     "checkboxland": "^1.5.0",

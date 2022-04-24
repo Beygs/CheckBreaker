@@ -21,6 +21,7 @@ Checkboxland.extend(dataUtils);
  */
 const body = document.body!;
 const app = document.querySelector<HTMLDivElement>("#app")!;
+
 const muteControl = document.getElementById(
   "sound-control"
 )! as HTMLInputElement;
@@ -76,7 +77,7 @@ const setSpeed = (speed: number) => {
   const percentage = 2.2 - (speed - 20) / 50;
 
   clearInterval(state.intervalId);
-  state.intervalId = setInterval(game, config.interval);
+  state.intervalId = window.setInterval(game, config.interval);
 
   config.song.playbackRate = percentage;
   config.gameOverSound.playbackRate = percentage;
@@ -177,7 +178,7 @@ const startScreen = () => {
   grid.print("dans", { y: 12, x: 2 });
   grid.print("CheckBreak", { y: 22, x: 2 });
 
-  state.timeoutId = setTimeout(() => {
+  state.timeoutId = window.setTimeout(() => {
     const textData = grid.print("Appuyez sur une touche pour commencer", {
       dataOnly: true,
     });
@@ -243,7 +244,7 @@ const launchGame = () => {
 
   body.removeEventListener("keydown", launchGame);
   body.addEventListener("keydown", captureInput);
-  state.intervalId = setInterval(game, config.interval);
+  state.intervalId = window.setInterval(game, config.interval);
 };
 
 const game = () => {
