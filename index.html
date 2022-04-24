@@ -13,6 +13,11 @@
   <body>
     <label for="sound-control">Son</label>
     <input type="checkbox" id="sound-control" checked="true" />
+    <label for="volume">Volume</label>
+    <input type="range" min="0" max="1" step="0.01" value="1" id="volume" />
+    <label for="speed">Vitesse</label>
+    <input type="range" id="speed" min="-120" max="-20" value="-70" step="1" />
+    <button id="reset">Reset</button>
     <div id="app"></div>
     <script type="module" src="/src/main.ts"></script>
   </body>

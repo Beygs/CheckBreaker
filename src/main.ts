@@ -21,14 +21,21 @@ Checkboxland.extend(dataUtils);
  */
 const body = document.body!;
 const app = document.querySelector<HTMLDivElement>("#app")!;
-const soundControl = document.getElementById(
+const muteControl = document.getElementById(
   "sound-control"
 )! as HTMLInputElement;
+const volumeControl = document.getElementById("volume")! as HTMLInputElement;
+const speedControl = document.getElementById("speed")! as HTMLInputElement;
+const resetSpeed = document.getElementById("reset")! as HTMLButtonElement;
 
 // Sound
-soundControl.addEventListener("change", (e) => {
+muteControl.addEventListener("change", (e) => {
   const target = e.target as HTMLInputElement;
   state.sound = target.checked;
+
+  target.checked
+    ? (volumeControl.disabled = false)
+    : (volumeControl.disabled = true);
 
   config.song.volume = target.checked ? 1 : 0;
   config.gameOverSound.volume = target.checked ? 1 : 0;
@@ -36,6 +43,47 @@ soundControl.addEventListener("change", (e) => {
   config.crashSound.volume = target.checked ? 1 : 0;
   config.ouiSound.volume = target.checked ? 1 : 0;
 });
+
+volumeControl.addEventListener("change", (e) => {
+  const target = e.target as HTMLInputElement;
+  const value = parseFloat(target.value);
+
+  config.song.volume = value;
+  config.gameOverSound.volume = value;
+  config.boingSound.volume = value;
+  config.crashSound.volume = value;
+  config.ouiSound.volume = value;
+
+  if (value === 0) muteControl.checked = false;
+});
+
+// Speed
+speedControl.addEventListener("change", (e) => {
+  const target = e.target as HTMLInputElement;
+  const value = parseInt(target.value) * -1;
+
+  setSpeed(value);
+});
+
+resetSpeed.addEventListener("click", () => {
+  speedControl.value = "-70";
+  setSpeed(70);
+});
+
+const setSpeed = (speed: number) => {
+  config.interval = speed;
+
+  const percentage = 2.2 - (speed - 20) / 50;
+  
+  clearInterval(state.intervalId);
+  state.intervalId = setInterval(game, config.interval);
+
+  config.song.playbackRate = percentage;
+  config.gameOverSound.playbackRate = percentage;
+  config.boingSound.playbackRate = percentage;
+  config.crashSound.playbackRate = percentage;
+  config.ouiSound.playbackRate = percentage;
+}
 
 const config: Config = {
   width: 64,
@@ -76,10 +124,11 @@ const state: State = {
   gameMap: grid.getEmptyMatrix(),
   intervalId: undefined,
   timeoutId: undefined,
-  sound: soundControl.checked,
+  sound: muteControl.checked,
 };
 
 const init = () => {
+  grid.marquee.cleanUp();
   startScreen();
   body.addEventListener("keydown", launchGame);
 };
@@ -99,8 +148,7 @@ const setInitialState = () => {
   }
 
   // Set initial ball position
-  const ballBottom =
-    config.height - Math.floor(Math.random() * ((config.height / 3) * 2));
+  const ballBottom = Math.floor(config.height / 2);
   const ballLeft = Math.floor(Math.random() * config.width);
 
   for (let y = ballBottom; y >= ballBottom - 1; y--) {
@@ -149,7 +197,7 @@ const win = () => {
     config.ouiSound.currentTime = 0;
 
     config.song.play();
-  })
+  });
 
   state.gameMap = grid.getEmptyMatrix();
   drawGame();
@@ -379,7 +427,7 @@ const crash = (velocityAxis: "dx" | "dy", id: number) => {
   state.ballVelocity[velocityAxis] *= -1;
 
   removeBrick(id);
-}
+};
 
 const removeBrick = (id: number) => {
   state.bricks = state.bricks.filter((brick) => brick.id !== id);
