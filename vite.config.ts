@@ -5,6 +5,7 @@ export default defineConfig({
   base: process.env.BASE_URL ?? "/",
   plugins: [
     VitePWA({
+      registerType: "autoUpdate",
       includeAssets: [
         "favicon.ico",
         "robots.txt",
