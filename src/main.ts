@@ -11,10 +11,16 @@ import BoingSound from "./assets/sounds/boing.wav";
 import CrashSound from "./assets/sounds/crash.wav";
 import OuiSound from "./assets/sounds/oui.mp3";
 import "./style.css";
+import { registerSW } from "virtual:pwa-register";
 
 Checkboxland.extend(marquee);
 Checkboxland.extend(print);
 Checkboxland.extend(dataUtils);
+
+/**
+ * Service Workers
+ */
+registerSW({ immediate: true });
 
 /**
  * Setup
