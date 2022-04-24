@@ -14,6 +14,7 @@ export default defineConfig({
         name: "CheckBreaker",
         short_name: "CheckBreaker",
         description: "Casse briques en checkbox",
+        start_url: "/",
         theme_color: "#ffffff",
         icons: [
           {
