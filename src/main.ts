@@ -39,7 +39,7 @@ soundControl.addEventListener("change", (e) => {
 
 const config: Config = {
   width: 64,
-  height: 64,
+  height: 48,
   interval: 70,
   directionsMap: {
     ArrowLeft: "left",
