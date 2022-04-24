@@ -74,7 +74,7 @@ const setSpeed = (speed: number) => {
   config.interval = speed;
 
   const percentage = 2.2 - (speed - 20) / 50;
-  
+
   clearInterval(state.intervalId);
   state.intervalId = setInterval(game, config.interval);
 
@@ -83,7 +83,7 @@ const setSpeed = (speed: number) => {
   config.boingSound.playbackRate = percentage;
   config.crashSound.playbackRate = percentage;
   config.ouiSound.playbackRate = percentage;
-}
+};
 
 const config: Config = {
   width: 64,
@@ -359,7 +359,8 @@ const moveBall = () => {
     // Left
     if (
       state.ballVelocity.dx >= 0 &&
-      ballPosition.maxX === brickPosition.minX - 1 &&
+      (ballPosition.maxX === brickPosition.minX ||
+        ballPosition.maxX === brickPosition.minX - 1) &&
       ballPosition.maxY >= brickPosition.minY - 1 &&
       ballPosition.minY <= brickPosition.maxY + 1
     ) {
@@ -370,7 +371,8 @@ const moveBall = () => {
     // Right
     if (
       state.ballVelocity.dx <= 0 &&
-      ballPosition.minX === brickPosition.maxX + 1 &&
+      (ballPosition.minX === brickPosition.maxX ||
+        ballPosition.minX === brickPosition.maxX + 1) &&
       ballPosition.maxY >= brickPosition.minY - 1 &&
       ballPosition.minY <= brickPosition.maxY + 1
     ) {
